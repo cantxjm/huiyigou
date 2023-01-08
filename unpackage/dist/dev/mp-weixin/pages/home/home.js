@@ -189,6 +189,10 @@ var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/r
 //
 //
 //
+//
+//
+//
+//
 var _default = {
   data: function data() {
     return {
@@ -305,6 +309,11 @@ var _default = {
           }
         }, _callee3);
       }))();
+    },
+    gotoSearch: function gotoSearch() {
+      uni.navigateTo({
+        url: '/subpkg/search/search'
+      });
     }
   }
 };

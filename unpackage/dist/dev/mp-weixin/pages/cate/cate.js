@@ -200,6 +200,10 @@ var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/r
 //
 //
 //
+//
+//
+//
+//
 var _default = {
   data: function data() {
     return {
@@ -215,7 +219,7 @@ var _default = {
   onLoad: function onLoad() {
     var sysInfo = uni.getSystemInfoSync();
     // console.log(sysInfo);
-    this.wh = sysInfo.windowHeight;
+    this.wh = sysInfo.windowHeight - 50;
     this.getCateList();
   },
   methods: {
@@ -262,6 +266,11 @@ var _default = {
     getGoodsList: function getGoodsList(item) {
       uni.navigateTo({
         url: '/subpkg/goods_list/goods_list?cid=' + item.cat_id
+      });
+    },
+    gotoSearch: function gotoSearch() {
+      uni.navigateTo({
+        url: '/subpkg/search/search'
       });
     }
   }
