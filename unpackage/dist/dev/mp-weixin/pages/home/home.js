@@ -220,17 +220,15 @@ var _default = {
               case 2:
                 _yield$uni$$http$get = _context.sent;
                 res = _yield$uni$$http$get.data;
-                console.log(res);
-                // 请求失败
                 if (!(res.meta.status !== 200)) {
-                  _context.next = 7;
+                  _context.next = 6;
                   break;
                 }
                 return _context.abrupt("return", uni.$showMsg());
-              case 7:
+              case 6:
                 _this.swiperList = res.message;
                 uni.$showMsg('数据请求成功！');
-              case 9:
+              case 8:
               case "end":
                 return _context.stop();
             }
