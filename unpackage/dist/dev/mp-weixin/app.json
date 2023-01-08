@@ -10,7 +10,8 @@
       "root": "subpkg",
       "pages": [
         "goods_detail/goods_detail",
-        "goods_list/goods_list"
+        "goods_list/goods_list",
+        "search/search"
       ]
     }
   ],
@@ -21,7 +22,7 @@
     "backgroundColor": "#F8F8F8"
   },
   "tabBar": {
-    "selectedColor": "#c00000",
+    "selectedColor": "#C00000",
     "list": [
       {
         "pagePath": "pages/home/home",

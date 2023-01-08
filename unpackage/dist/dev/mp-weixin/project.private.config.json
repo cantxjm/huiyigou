@@ -1,4 +1,5 @@
 {
+    "setting": {},
     "condition": {
         "plugin": {
             "list": []
@@ -12,8 +13,8 @@
         "miniprogram": {
             "list": [
                 {
-                    "name": "cate",
-                    "pathName": "pages/cate/cate",
+                    "name": "",
+                    "pathName": "subpkg/search/search",
                     "query": "",
                     "scene": null
                 }
