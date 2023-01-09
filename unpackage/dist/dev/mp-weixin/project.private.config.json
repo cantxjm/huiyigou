@@ -14,8 +14,8 @@
             "list": [
                 {
                     "name": "",
-                    "pathName": "subpkg/goods_detail/goods_detail",
-                    "query": "goods_id=395",
+                    "pathName": "pages/cart/cart",
+                    "query": "",
                     "scene": null
                 }
             ]
