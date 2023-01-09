@@ -96,6 +96,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return recyclableRender; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components
+try {
+  components = {
+    myGoods: function () {
+      return __webpack_require__.e(/*! import() | uni_modules/my-goods/components/my-goods/my-goods */ "uni_modules/my-goods/components/my-goods/my-goods").then(__webpack_require__.bind(null, /*! @/uni_modules/my-goods/components/my-goods/my-goods.vue */ 91))
+    },
+  }
+} catch (e) {
+  if (
+    e.message.indexOf("Cannot find module") !== -1 &&
+    e.message.indexOf(".vue") !== -1
+  ) {
+    console.error(e.message)
+    console.error("1. 排查组件名称拼写是否正确")
+    console.error(
+      "2. 排查组件是否符合 easycom 规范，文档：https://uniapp.dcloud.net.cn/collocation/pages?id=easycom"
+    )
+    console.error(
+      "3. 若组件不符合 easycom 规范，需手动引入，并在 components 中注册该组件"
+    )
+  } else {
+    throw e
+  }
+}
 var render = function () {
   var _vm = this
   var _h = _vm.$createElement
@@ -133,12 +156,20 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
 
-
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 3);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 39));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 17));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 41));
+//
+//
+//
+//
 //
 //
 //
@@ -147,10 +178,91 @@ exports.default = void 0;
 //
 var _default = {
   data: function data() {
-    return {};
+    return {
+      queryObj: {
+        query: '',
+        cid: '',
+        pagenum: 1,
+        pagesize: 10
+      },
+      goodsList: [],
+      total: 0,
+      // 默认的图片
+      defaultPic: 'https://img3.doubanio.com/f/movie/8dd0c794499fe925ae2ae89ee30cd225750457b4/pics/movie/celebrity-default-medium.png',
+      // 是否请求数据(节流阀)
+      isloading: false
+    };
+  },
+  onLoad: function onLoad(options) {
+    // console.log(options);
+    this.queryObj.query = options.query || '';
+    this.queryObj.cid = options.cid || '';
+    this.getGoodsList();
+  },
+  methods: {
+    // 获取商品列表数据的方法
+    getGoodsList: function getGoodsList(cb) {
+      var _this = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        var _yield$uni$$http$get, res;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // 打开节流阀
+                _this.isloading = true;
+                _context.next = 3;
+                return uni.$http.get('/api/public/v1/goods/search', _this.queryObj);
+              case 3:
+                _yield$uni$$http$get = _context.sent;
+                res = _yield$uni$$http$get.data;
+                // 关闭节流阀
+                _this.isloading = false;
+                cb && cb();
+                if (!(res.meta.status !== 200)) {
+                  _context.next = 9;
+                  break;
+                }
+                return _context.abrupt("return", uni.$showMsg());
+              case 9:
+                _this.goodsList = [].concat((0, _toConsumableArray2.default)(_this.goodsList), (0, _toConsumableArray2.default)(res.message.goods));
+                _this.total = res.message.total;
+              case 11:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    gotoDetail: function gotoDetail(item) {
+      uni.navigateTo({
+        url: '/subpkg/goods_detail/goods_detail?goods_id=' + item.goods_id
+      });
+    }
+  },
+  onReachBottom: function onReachBottom() {
+    if (this.queryObj.pagenum * this.queryObj.pagesize >= this.total) return uni.$showMsg('数据加载完毕');
+    if (this.isloading) return;
+    // 让页码值自增 +1
+    this.queryObj.pagenum++;
+    this.getGoodsList();
+  },
+  onPullDownRefresh: function onPullDownRefresh() {
+    // 重置关键数据
+    this.queryObj.pagenum = 1;
+    this.total = 0;
+    this.isloading = false;
+    this.goodsList = [];
+
+    // 重新发起请求
+    this.getGoodsList(function () {
+      return uni.stopPullDownRefresh();
+    });
   }
 };
 exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ })
 
