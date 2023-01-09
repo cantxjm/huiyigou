@@ -14,8 +14,8 @@
             "list": [
                 {
                     "name": "",
-                    "pathName": "subpkg/goods_list/goods_list",
-                    "query": "query=运动鞋",
+                    "pathName": "subpkg/goods_detail/goods_detail",
+                    "query": "goods_id=395",
                     "scene": null
                 }
             ]
