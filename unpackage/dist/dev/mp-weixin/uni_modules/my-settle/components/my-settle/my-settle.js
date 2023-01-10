@@ -114,33 +114,148 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(uni) {
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 3);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 43));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 45));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 10));
 var _vuex = __webpack_require__(/*! vuex */ 33);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var _default = {
   data: function data() {
-    return {};
+    return {
+      // 倒计时的秒数
+      seconds: 3,
+      // 定时器的 Id
+      timer: null
+    };
   },
-  computed: _objectSpread(_objectSpread({}, (0, _vuex.mapGetters)('m_cart', ['checkedCount', 'total', 'checkedGoodsAmount'])), {}, {
+  computed: _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, (0, _vuex.mapGetters)('m_cart', ['checkedCount', 'total', 'checkedGoodsAmount'])), (0, _vuex.mapGetters)('m_user', ['addstr'])), (0, _vuex.mapState)('m_user', ['token'])), (0, _vuex.mapState)('m_cart', ['cart'])), {}, {
     isFullCheck: function isFullCheck() {
       return this.total === this.checkedCount;
     }
   }),
-  methods: _objectSpread(_objectSpread({}, (0, _vuex.mapMutations)('m_cart', ['updateAllGoodsState'])), {}, {
+  methods: _objectSpread(_objectSpread(_objectSpread({}, (0, _vuex.mapMutations)('m_cart', ['updateAllGoodsState'])), (0, _vuex.mapMutations)('m_user', ['updateRedirectInfo'])), {}, {
     changeAllState: function changeAllState() {
       this.updateAllGoodsState(!this.isFullCheck);
+    },
+    // 用户点击了结算按钮
+    settlement: function settlement() {
+      if (!this.checkedCount) return uni.$showMsg('请选择要结算的商品!');
+      if (!this.addstr) return uni.$showMsg('请选择收货地址!');
+
+      // if (!this.token) return uni.$showMsg('请先登录!')
+      if (!this.token) return this.delayNavigate();
+
+      // 实现微信支付功能
+      this.payOrder();
+    },
+    // 展示倒计时的提示消息
+    showTips: function showTips(n) {
+      // 调用 uni.showToast() 方法，展示提示消息
+      uni.showToast({
+        // 不展示任何图标
+        icon: 'none',
+        // 提示的消息
+        title: '请登录后再结算！' + n + ' 秒后自动跳转到登录页',
+        // 为页面添加透明遮罩，防止点击穿透
+        mask: true,
+        // 1.5 秒后自动消失
+        duration: 1500
+      });
+    },
+    // 延迟导航到 my 页面
+    delayNavigate: function delayNavigate() {
+      var _this = this;
+      this.seconds = 3;
+
+      // 1. 展示提示消息，此时 seconds 的值等于 3
+      this.showTips(this.seconds);
+
+      // 2. 创建定时器，每隔 1 秒执行一次
+      this.timer = setInterval(function () {
+        // 2.1 先让秒数自减 1
+        _this.seconds--;
+        if (_this.seconds <= 0) {
+          clearInterval(_this.timer);
+          uni.switchTab({
+            url: '/pages/my/my',
+            success: function success() {
+              _this.updateRedirectInfo({
+                openType: 'switchTab',
+                from: '/pages/cart/cart'
+              });
+            }
+          });
+          return;
+        }
+        // 2.2 再根据最新的秒数，进行消息提示
+        _this.showTips(_this.seconds);
+      }, 1000);
+    },
+    // 微信支付
+    payOrder: function payOrder() {
+      var _this2 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        var orderInfo, _yield$uni$$http$post, res, orderNumber;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // 1. 创建订单
+                // 1.1 组织订单的信息对象
+                orderInfo = {
+                  // 开发期间，注释掉真实的订单价格，
+                  // order_price: this.checkedGoodsAmount,
+                  // 写死订单总价为 1 分钱
+                  order_price: 0.01,
+                  consignee_addr: _this2.addstr,
+                  goods: _this2.cart.filter(function (x) {
+                    return x.goods_state;
+                  }).map(function (x) {
+                    return {
+                      goods_id: x.goods_id,
+                      goods_number: x.goods_count,
+                      goods_price: x.goods_price
+                    };
+                  })
+                }; // 1.2 发起请求创建订单
+                _context.next = 3;
+                return uni.$http.post('/api/public/v1/my/orders/create', orderInfo);
+              case 3:
+                _yield$uni$$http$post = _context.sent;
+                res = _yield$uni$$http$post.data;
+                if (!(res.meta.status !== 200)) {
+                  _context.next = 7;
+                  break;
+                }
+                return _context.abrupt("return", uni.$showMsg('创建订单失败！'));
+              case 7:
+                // 1.3 得到服务器响应的“订单编号”
+                orderNumber = res.message.order_number;
+                console.log(orderNumber);
+
+                // 2. 订单预支付
+
+                // 3. 发起微信支付
+              case 9:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     }
   })
 };
 exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 

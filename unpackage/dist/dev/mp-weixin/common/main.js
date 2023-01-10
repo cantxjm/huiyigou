@@ -31,6 +31,16 @@ _requestMiniprogram.$http.beforeRequest = function (options) {
   uni.showLoading({
     title: '数据加载中...'
   });
+
+  // console.log(store);
+  // 判断请求的是否为有权限的 API 接口
+  if (options.url.indexOf('/my/') !== -1) {
+    // 为请求头添加身份认证字段
+    options.header = {
+      // 字段的值可以直接从 vuex 中进行获取
+      Authorization: _store.default.state.m_user.token
+    };
+  }
 };
 
 // 响应拦截器
@@ -130,13 +140,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = {
   onLaunch: function onLaunch() {
-    console.log('App Launch');
+    // console.log('App Launch')
   },
   onShow: function onShow() {
-    console.log('App Show');
+    // console.log('App Show')
   },
   onHide: function onHide() {
-    console.log('App Hide');
+    // console.log('App Hide')
   }
 };
 exports.default = _default;
